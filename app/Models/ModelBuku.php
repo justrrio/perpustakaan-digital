@@ -7,9 +7,9 @@ use CodeIgniter\Model;
 class ModelBuku extends Model
 {
     protected $table = "buku";
-    protected $id = "id_buku";
+    protected $primaryKey = "id_buku";
     protected $useTimestamps = true;
-    protected $allowedFields = ['cover', 'judul', 'id_kategori', 'deskripsi', 'jumlah', 'file_path', 'slug'];
+    protected $allowedFields = ['cover', 'judul', 'id_kategori', 'deskripsi', 'jumlah', 'file_buku', 'slug'];
 
     public function getBuku($slug = false)
     {
@@ -20,6 +20,7 @@ class ModelBuku extends Model
             return $this->get()->getResultArray();
         }
 
+        // dd($this->where(['slug' => $slug])->first());
         return $this->where(['slug' => $slug])->first();
     }
 }

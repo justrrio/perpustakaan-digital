@@ -15,6 +15,9 @@
                             <p class="badge text-bg-secondary p-2"><?= ucwords($buku['nama_kategori']); ?></p>
                             <p class="card-text"><?= $buku['deskripsi']; ?></p>
                             <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            <a href="<?= base_url('/uploads/file-buku/' . $buku['file_buku']) ?>" class="btn btn-primary d-block" download>
+                                Download File Buku
+                            </a>
 
                             <a href="<?= base_url("buku") ?>">Kembali ke daftar buku.</a>
                         </div>
