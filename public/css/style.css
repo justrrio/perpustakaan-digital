@@ -1,3 +1,5 @@
-body {
-    padding: 0 50px 0 50px;
+.cover {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
 }
