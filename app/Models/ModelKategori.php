@@ -7,11 +7,16 @@ use CodeIgniter\Model;
 class ModelKategori extends Model
 {
     protected $table = "kategori";
-    protected $id = "id_kategori";
+    protected $primaryKey = "id_kategori";
     protected $useTimestamps = true;
+    protected $allowedFields = ['nama'];
 
-    public function getKategori()
+    public function getKategori($namaKategori = false)
     {
-        return $this->findAll();
+        if ($namaKategori == false) {
+            return $this->findAll();
+        }
+
+        return $this->where(['nama' => $namaKategori])->first();
     }
 }

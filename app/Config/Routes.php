@@ -42,4 +42,15 @@ $routes->group('buku', function ($routes) {
 // Routes Kategori
 $routes->group('kategori', function ($routes) {
     $routes->get("/", "Kategori::index");
+
+    // Tambah Kategori
+    $routes->get("tambah", "Kategori::tambah");
+    $routes->post("tambah-kategori", "Kategori::tambahKategori");
+
+    // Edit Kategori
+    $routes->get("edit/(:any)", "Kategori::edit/$1");
+    $routes->post("edit-kategori/(:any)", "Kategori::editKategori/$1");
+
+    // Hapus Kategori
+    $routes->delete("(:num)", "Kategori::delete/$1");
 });

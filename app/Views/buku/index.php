@@ -42,7 +42,6 @@
 // }
 ?>
 
-
 <div class="container-data-buku">
     <?php if (session()->getFlashdata("message")) : ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
