@@ -3,3 +3,126 @@
     height: 150px;
     object-fit: cover;
 }
+
+/* Login Page Style */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f9;
+    background: radial-gradient(#87CDFF, #B9E2FF, #fff);
+}
+
+.login-container,
+.register-container {
+    background: white;
+    width: 80%;
+    max-height: 800px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    border-top: solid 8px #3AA4F1;
+}
+.login-container {
+    max-width: 1000px;
+}
+.register-container {
+    max-width: 1100px;
+}
+
+.login-form,
+.register-form {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+.logo {
+    width: 400px;
+    margin-bottom: 40px;
+}
+
+.login-logo,
+.register-logo {
+    display: flex;
+    justify-content: center;
+}
+
+.login-cover img,
+.register-cover img {
+    max-width: 500px;
+    margin-left: 80px;
+}
+
+h2 {
+    color: #333;
+}
+
+p {
+    color: #666;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.remember-me label {
+    cursor: pointer;
+}
+
+.submit-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.submit-group button {
+    background-color: #3AA4F1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}   
+
+.submit-group button[type="button"] {
+    background-color: #3AA4F1;
+}
+
+.signup-link {
+    text-align: center;
+}
+
+.signup-link a {
+    color: #3AA4F1;
+    text-decoration: none;
+}
+

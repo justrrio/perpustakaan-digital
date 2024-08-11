@@ -66,7 +66,7 @@
                     <!-- <button type="button" class="btn btn-danger d-inline" data-bs-toggle="modal" data-bs-target="#exampleModal" data-judul="<?= $b['judul']; ?>" data-id="<?= $b['id_buku']; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Buku">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button> -->
-                    <button type="button" class="btn btn-danger d-inline" data-bs-toggle="modal" data-bs-target="#exampleModal" data-judul="${buku.judul}" data-id="${buku.id_buku}" title="Hapus Buku">
+                    <button type="button" class="btn btn-danger d-inline" data-bs-toggle="modal" data-bs-target="#exampleModal" data-judul="<?= $b['judul']; ?>" data-id="<?= $b['id_buku']; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Buku">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
 
