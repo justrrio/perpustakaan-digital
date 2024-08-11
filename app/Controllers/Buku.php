@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\ModelBuku;
 use App\Models\ModelKategori;
+use App\Models\ModelUser;
 
 class Buku extends BaseController
 {
@@ -11,6 +12,7 @@ class Buku extends BaseController
     {
         $this->modelBuku = new ModelBuku();
         $this->modelKategori = new ModelKategori();
+        $this->modelUser = new ModelUser();
     }
 
     public function index()
@@ -21,7 +23,11 @@ class Buku extends BaseController
         $data = [
             'title' => "Daftar Buku",
             'kategori' => $kategori,
+            'totalBuku' => $this->modelBuku->countAll(),
+            'totalKategori' => $this->modelKategori->countAll(),
+            'totalUser' => $this->modelUser->countAll(),
             'buku' => $buku,
+            'currentPage' => 'buku'
         ];
 
         return view("buku/index", $data);
@@ -39,6 +45,7 @@ class Buku extends BaseController
         $data = [
             'title' => "Detail Buku",
             'buku' => $buku,
+            'currentPage' => "buku"
         ];
 
         return view("buku/detail", $data);
@@ -50,7 +57,8 @@ class Buku extends BaseController
         $data = [
             'title' => "Tambah Buku",
             'kategori' => $kategori,
-            'validation' => session()->getFlashdata('validation') // Mengambil flashdata validation
+            'validation' => session()->getFlashdata('validation'),
+            'currentPage' => "buku"
         ];
 
         return view("buku/tambah", $data);
@@ -184,7 +192,8 @@ class Buku extends BaseController
             'title' => "Form Ubah Buku",
             'validation' => session()->getFlashdata('validation'),
             'kategori' => $kategori,
-            'buku' => $buku
+            'buku' => $buku,
+            'currentPage' => "buku"
         ];
 
         return view("buku/edit", $data);

@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/template'); ?>
+<?= $this->extend('layouts/auth-template'); ?>
 
 <?= $this->section('content'); ?>
 
@@ -23,14 +23,41 @@
             <div>
                 <h1>Login</h1>
                 <p>Harap masukkan data akun Anda.</p>
-                <form action="submit-login.php" method="post">
-                    <div class="input-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
+
+                <?php if (session()->getFlashdata("message")) : ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fa fa-check" aria-hidden="true"></i> <?= session()->getFlashdata("message"); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                <?php endif; ?>
+
+                <form action="<?= base_url("/login-submit"); ?>" method="post">
+                    <?= csrf_field(); ?>
+
+                    <!-- EMAIL -->
                     <div class="input-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
+                        <label for="email form-label">Email</label>
+                        <input type="email" id="email" name="email" placeholder="test@gmail.com" class="form-control <?= (isset($validation['email'])) ? 'is-invalid' : '' ?>" autofocus>
+                        <?php if (isset($validation['email'])) : ?>
+                            <span style="color: red;"><?= $validation['email']; ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="input-group d-block">
+                        <div>
+                            <label for="password" class="form-label">Password</label>
+                        </div>
+                        <div class="d-flex">
+                            <input type="password" class="form-control <?= (isset($validation['password'])) ? 'is-invalid' : '' ?>" id="password" name="password" placeholder="*****">
+                            <span class="input-group-text">
+                                <i class="fa fa-eye" id="togglePassword" style="cursor: pointer" onclick="togglePassword('password', 'togglePassword')"></i>
+                            </span>
+                        </div>
+
+                        <?php if (isset($validation['password'])) : ?>
+                            <span style="color: red;"><?= $validation['password']; ?></span>
+                        <?php endif; ?>
                     </div>
                     <!-- <div class="options">
                         <div class="remember-me">

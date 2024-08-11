@@ -20,58 +20,133 @@ class Auth extends Controller
     {
         $data = [
             "title" => "Halaman Login",
+            "validation" => session()->getFlashdata('validation')
         ];
 
         return view('auth/login', $data);
     }
 
+    public function loginSubmit()
+    {
+        helper(['form', 'url']);
+
+        // Validation rules
+        $validationRules = [
+            'email' => [
+                'rules' => 'required|valid_email',
+                'errors' => [
+                    'required' => 'Email harus diisi.',
+                    'valid_email' => 'Format email tidak valid.',
+                ]
+            ],
+            'password' => [
+                'rules' => 'required|min_length[8]',
+                'errors' => [
+                    'required' => 'Password harus diisi.',
+                    'min_length' => 'Password minimal 8 karakter.'
+                ]
+            ],
+        ];
+
+        if ($this->validate($validationRules)) {
+            $modelUser = new ModelUser();
+            $email = $this->request->getVar('email');
+            $password = $this->request->getVar('password');
+
+            $user = $modelUser->where('email', $email)->first();
+
+            if ($user) {
+                // Verify password
+                if (password_verify($password, $user['password'])) {
+                    // Set session
+                    $sessionData = [
+                        'user_id' => $user['id_user'],
+                        'username' => $user['username'],
+                        'email' => $user['email'],
+                        'role' => $user['role'],
+                        'isLoggedIn' => true
+                    ];
+
+                    session()->set($sessionData);
+                    return redirect()->to(base_url("/buku"));
+                } else {
+                    session()->setFlashdata('validation', ['password' => 'Password is incorrect']);
+                }
+            } else {
+                session()->setFlashdata('validation', ['email' => 'Email not found']);
+            }
+        } else {
+            session()->setFlashdata('validation', $this->validator->getErrors());
+        }
+
+        return redirect()->to(base_url("/login"))->withInput();
+    }
+
     public function register()
     {
         $data = [
-            'title' => "Register"
+            'title' => "Halaman Register",
+            'validation' => session()->getFlashdata('validation')
         ];
 
         return view('auth/register', $data);
     }
 
-    // public function login()
-    // {
-    //     helper(['form', 'url']);
-
-    //     $rules = [
-    //         'email' => 'required|min_length[6]|max_length[50]|valid_email',
-    //         'password' => 'required|min_length[8]|max_length[255]'
-    //     ];
-
-    //     if (!$this->validate($rules)) {
-    //         // Jika validasi gagal, kembalikan ke halaman login dengan errors
-    //         return redirect()->to('/login')->withInput()->with('errors', $this->validator->getErrors());
-    //     } else {
-    //         $email = $this->request->getVar('email');
-    //         $password = $this->request->getVar('password');
-    //         $user = $this->modelUser->where('email', $email)->first();
-
-    //         if (!empty($user) && password_verify($password, $user['password'])) {
-    //             // Login berhasil!
-    //             $this->setUserSession($user);
-    //             return redirect()->to('/buku');
-    //         } else {
-    //             // Login gagal!
-    //             $this->session->setFlashdata('error', 'Email atau Password salah');
-    //             return redirect()->to('/login');
-    //         }
-    //     }
-    // }
-
-    private function setUserSession($user)
+    public function registerSubmit()
     {
-        $data = [
-            'id' => $user['id'],
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'isLoggedIn' => true,
+        helper(['form', 'url']);
+
+        $validationRules = [
+            'username' => [
+                'rules' => 'required|min_length[5]|max_length[20]|is_unique[users.username]',
+                'errors' => [
+                    'required' => 'Username harus diisi.',
+                    'min_length' => 'Username minimal 5 karakter.',
+                    'max_length' => 'Username maksimal 20 karakter.',
+                    'is_unique' => 'Username sudah terdaftar.'
+                ]
+            ],
+            'email' => [
+                'rules' => 'required|valid_email|is_unique[users.email]',
+                'errors' => [
+                    'required' => 'Email harus diisi.',
+                    'valid_email' => 'Format email tidak valid.',
+                    'is_unique' => 'Email sudah terdaftar.'
+                ]
+            ],
+            'password' => [
+                'rules' => 'required|min_length[8]',
+                'errors' => [
+                    'required' => 'Password harus diisi.',
+                    'min_length' => 'Password minimal 8 karakter.'
+                ]
+            ],
+            'confirm-password' => [
+                'rules' => 'matches[password]',
+                'errors' => [
+                    'matches' => 'Konfirmasi password tidak cocok dengan password.'
+                ]
+            ]
         ];
-        $this->session->set($data);
+
+        if ($this->validate($validationRules)) {
+            $modelUser = new ModelUser();
+
+            $dataAkun = [
+                'username' => $this->request->getVar('username'),
+                'email' => $this->request->getVar('email'),
+                'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+                'role' => 'user'
+            ];
+
+            $modelUser->save($dataAkun);
+            session()->setFlashdata('message', 'Akun <strong>berhasil</strong> dibuat!');
+            return redirect()->to('/login');
+        } else {
+            $validationErrors = $this->validator->getErrors();
+            session()->setFlashdata('validation', $validationErrors);
+            return redirect()->to('/register')->withInput();
+        }
     }
 
     public function logout()

@@ -1,0 +1,184 @@
+/* Navbar */
+.logo {
+    width: 40px;
+    object-fit: cover;
+}
+
+.navbar {
+    min-height: 300px;
+    padding: 0 50px 0 50px !important;
+    background: linear-gradient(#9dd6ff, #B9E2FF, #fff);
+}
+
+.nav-link {
+    color: #000; /* Default link color */
+    font-weight: normal; /* Default font weight */
+    transition: color 0.3s ease, font-weight 0.3s ease;
+}
+
+.nav-link.active, .nav-link:hover {
+    color: #007bff; /* Active link color */
+    font-weight: bold; /* Active link font weight */
+}
+
+/* JUDUL LIST BUKU */
+
+.judul-page-buku {
+    width: 100%;
+    position: absolute; 
+    z-index: 1; 
+    top: 120px;
+    left: 50px;
+    padding: 0 20px 0 20px !important;
+}
+
+.judul-page-buku p {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.judul-page-buku span {
+    color: #0794FA;
+}
+
+/* DATA JUMLAH BUKU */
+.container-jumlah-buku {
+    position: absolute; 
+    z-index: 1; 
+    top: 230px;
+    left: 70px;
+    /* background-color: rgb(174, 175, 255); */
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 300px;
+}
+
+.icon-jumlah-buku {
+    font-size: 40px;
+}
+
+.content-jumlah-buku {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-jumlah-buku h5 {
+    /* color: #0794FA; */
+}
+
+.content-jumlah-buku h2 {
+    font-size: 60px;
+}
+
+/* DATA JUMLAH KATEGORI */
+.container-jumlah-kategori {
+    position: absolute; 
+    z-index: 1; 
+    top: 230px;
+    left: 400px;
+    /* background-color: rgb(183, 255, 174); */
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 300px;
+}
+
+.icon-jumlah-kategori {
+    font-size: 40px;
+}
+
+.content-jumlah-kategori {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-jumlah-kategori h5 {
+    /* color: #0794FA; */
+}
+
+.content-jumlah-kategori h2 {
+    font-size: 60px;
+}
+
+/* DATA JUMLAH USER */
+.container-jumlah-user {
+    position: absolute; 
+    z-index: 1; 
+    top: 230px;
+    left: 730px;
+    /* background-color: rgb(183, 255, 174); */
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 300px;
+}
+
+.icon-jumlah-user {
+    font-size: 40px;
+}
+
+.content-jumlah-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-jumlah-user h5 {
+    /* color: #0794FA; */
+}
+
+.content-jumlah-user h2 {
+    font-size: 60px;
+}
+
+/* DATA BUKU */
+.container-data-buku {
+    margin-top: 120px;
+    padding: 0 80px 0 80px;
+}
+
+.container-wrapper-buku {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cover {
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* DETAIL BUKU */
+.wrapper-detail {
+    margin-top: -20px;
+    padding: 0 75px 0 75px;
+    min-height: 500px;
+    position: absolute;
+    z-index: 1;
+}
+
+.cover-detail {
+    width: 300px;
+    height: 400xp;
+}
+
+.container-detail {
+    margin-left: 100px;
+}
+
+/* UBAH DATA BUKU */
+.container-ubah {
+    margin-left: 75px;
+}
+
+/* TAMBAH DATA BUKU */
+.container-tambah {
+    margin-left: 75px;
+}
