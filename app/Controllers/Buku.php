@@ -10,21 +10,41 @@ class Buku extends BaseController
 {
     public function __construct()
     {
+
         $this->modelBuku = new ModelBuku();
         $this->modelKategori = new ModelKategori();
         $this->modelUser = new ModelUser();
+
+        $this->role = session()->get("role");
+        $this->idUser = session()->get("id_user");
     }
 
     public function index()
     {
-        $buku = $this->modelBuku->getBuku();
-        $kategori = $this->modelKategori->getKategori();
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+
+        $buku = $this->modelBuku->getBuku($this->role, $this->idUser);
+        $kategori = $this->modelKategori->getKategori(session()->get("id_user"));
+
+        $totalKategori = $this->modelKategori
+            ->where('id_user', session()->get("id_user"))
+            ->countAllResults();
+
+        if ($this->role != "admin") {
+            $totalBuku = $this->modelBuku
+                ->where('id_user', session()->get("id_user"))
+                ->countAllResults();
+        } else {
+            $totalBuku = $this->modelBuku->countAll();
+        }
 
         $data = [
             'title' => "Daftar Buku",
             'kategori' => $kategori,
-            'totalBuku' => $this->modelBuku->countAll(),
-            'totalKategori' => $this->modelKategori->countAll(),
+            'totalBuku' => $totalBuku,
+            'totalKategori' => $totalKategori,
             'totalUser' => $this->modelUser->countAll(),
             'buku' => $buku,
             'currentPage' => 'buku'
@@ -33,13 +53,16 @@ class Buku extends BaseController
         return view("buku/index", $data);
     }
 
-    public function detail($slug)
+    public function detail($idBuku)
     {
-        $buku = $this->modelBuku->getBuku($slug);
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+        $buku = $this->modelBuku->getBuku($this->role, $this->idUser, $idBuku);
 
         if (empty($buku)) {
             echo "<h1> Contoh </h1>";
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Judul buku " . $slug . " tidak ditemukan.");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Judul buku tidak ditemukan.");
         }
 
         $data = [
@@ -53,7 +76,11 @@ class Buku extends BaseController
 
     public function tambah()
     {
-        $kategori = $this->modelKategori->getKategori();
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+
+        $kategori = $this->modelKategori->getKategori(session()->get("id_user"));
         $data = [
             'title' => "Tambah Buku",
             'kategori' => $kategori,
@@ -66,16 +93,21 @@ class Buku extends BaseController
 
     public function tambahBuku()
     {
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
         // Aturan Validasi
         $validationRules = [
             'judul' => [
-                'rules' => 'required|is_unique[buku.judul]',
+                'label' => 'Judul',
+                'rules' => 'required|checkJudul',
                 'errors' => [
                     'required' => 'Judul buku harus diisi.',
-                    'is_unique' => 'Judul buku sudah ada.'
+                    'checkJudul' => 'Judul buku sudah ada.'
                 ]
             ],
             'id_kategori' => [
+                'label' => 'Kategori',
                 'rules' => 'required|integer',
                 'errors' => [
                     'required' => 'Kategori harus dipilih.',
@@ -83,6 +115,7 @@ class Buku extends BaseController
                 ]
             ],
             'jumlah' => [
+                'label' => 'Jumlah',
                 'rules' => 'required|integer',
                 'errors' => [
                     'required' => 'Jumlah buku harus diisi.',
@@ -90,6 +123,7 @@ class Buku extends BaseController
                 ]
             ],
             'file-buku' => [
+                'label' => 'File Buku',
                 'rules' => 'uploaded[file-buku]|mime_in[file-buku,application/pdf]',
                 'errors' => [
                     'uploaded' => 'File buku harus diunggah.',
@@ -97,6 +131,7 @@ class Buku extends BaseController
                 ]
             ],
             'cover' => [
+                'label' => 'Cover',
                 'rules' => 'uploaded[cover]|is_image[cover]|mime_in[cover,image/jpg,image/jpeg,image/png]',
                 'errors' => [
                     'uploaded' => 'Cover buku harus diunggah.',
@@ -105,6 +140,7 @@ class Buku extends BaseController
                 ]
             ],
             'deskripsi' => [
+                'label' => 'Deskripsi',
                 'rules' => 'required',
                 'errors' => [
                     'required' => 'Deskripsi buku harus diisi.'
@@ -112,14 +148,14 @@ class Buku extends BaseController
             ]
         ];
 
-        // Jika validasi gagal, kembalikan ke halaman tambah dengan input dan pesan error
+        // Validate the input data
         if (!$this->validate($validationRules)) {
-            $validationErrors = $this->validator->getErrors(); // Mengambil array error
-            session()->setFlashdata('validation', $validationErrors); // Simpan array error
+            $validationErrors = $this->validator->getErrors();
+            session()->setFlashdata('validation', $validationErrors);
             return redirect()->to('/buku/tambah')->withInput();
         }
 
-        // Proses upload file dan simpan ke database
+        // Process file uploads and save to the database
         $fileBuku = $this->request->getFile('file-buku');
         $fileCover = $this->request->getFile('cover');
 
@@ -137,38 +173,29 @@ class Buku extends BaseController
             $namaFileCover = null;
         }
 
-        $slug = url_title($this->request->getVar("judul"), "-", true);
-
         $this->modelBuku->save([
             "judul" => $this->request->getVar("judul"),
+            "id_user" => $this->request->getVar("id_user"),
             "id_kategori" => intval($this->request->getVar("id_kategori")),
             "jumlah" => $this->request->getVar("jumlah"),
             "file_buku" => $namaFileBuku,
             "cover" => $namaFileCover,
             "deskripsi" => $this->request->getVar("deskripsi"),
-            "slug" => $slug,
+            "user_id" => $this->idUser, // Ensure the user_id is saved
         ]);
 
         session()->setFlashdata("message", "Data buku <strong>berhasil</strong> ditambahkan!");
-
         return redirect()->to("/buku");
     }
 
     public function delete($id_buku)
     {
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
         $buku = $this->modelBuku->find($id_buku);
 
         if ($buku) {
-            // Hapus file buku dari server jika ada
-            if (!empty($buku['file_buku']) && file_exists('uploads/file-buku/' . $buku['file_buku'])) {
-                unlink('uploads/file-buku/' . $buku['file_buku']);
-            }
-
-            // Hapus cover buku dari server jika ada
-            if (!empty($buku['cover']) && file_exists('uploads/cover/' . $buku['cover'])) {
-                unlink('uploads/cover/' . $buku['cover']);
-            }
-
             // Hapus data buku dari database
             $this->modelBuku->delete($id_buku);
 
@@ -183,10 +210,14 @@ class Buku extends BaseController
         return redirect()->to("/buku");
     }
 
-    public function edit($slug)
+    public function edit($idBuku)
     {
-        $buku = $this->modelBuku->getBuku($slug);
-        $kategori = $this->modelKategori->getKategori();
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+
+        $buku = $this->modelBuku->getBuku($this->role, $this->idUser, $idBuku);
+        $kategori = $this->modelKategori->getKategori(session()->get("id_user"));
 
         $data = [
             'title' => "Form Ubah Buku",
@@ -201,6 +232,9 @@ class Buku extends BaseController
 
     public function editBuku($id_buku)
     {
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
         $bukuLama = $this->modelBuku->find($id_buku);
 
         if (!$bukuLama) {
@@ -256,7 +290,7 @@ class Buku extends BaseController
         if (!$this->validate($validationRules)) {
             $validationErrors = $this->validator->getErrors(); // Mengambil array error
             session()->setFlashdata('validation', $validationErrors); // Simpan array error
-            return redirect()->to('/buku/edit/' . $bukuLama['slug'])->withInput();
+            return redirect()->to('/buku/edit/' . $bukuLama['id_buku'])->withInput();
         }
 
         // Proses upload file baru dan simpan ke database
@@ -291,9 +325,6 @@ class Buku extends BaseController
             $namaFileCover = $bukuLama['cover'];
         }
 
-        // Slug baru jika judul berubah
-        $slug = url_title($this->request->getVar("judul"), "-", true);
-
         // Simpan perubahan ke database
         $this->modelBuku->update($id_buku, [
             "judul" => $this->request->getVar("judul"),
@@ -302,7 +333,6 @@ class Buku extends BaseController
             "file_buku" => $namaFileBuku,
             "cover" => $namaFileCover,
             "deskripsi" => $this->request->getVar("deskripsi"),
-            "slug" => $slug,
         ]);
 
         session()->setFlashdata("message", "Data buku <strong>berhasil</strong> diubah!");
@@ -310,38 +340,50 @@ class Buku extends BaseController
         return redirect()->to("/buku");
     }
 
-    public function search()
+    public function filter($namaKategori, $idKategori)
     {
-        // Mendapatkan data dari permintaan POST
-        $requestData = $this->request->getJSON();
-        $keyword = $requestData->keyword;
-        $kategori = $requestData->kategori;
+        $kategori = $this->modelBuku
+            ->select('buku.*, kategori.nama as nama_kategori, users.username, users.role')
+            ->join('kategori', 'buku.id_kategori = kategori.id_kategori')
+            ->join('users', 'buku.id_user = users.id_user');
 
-        // Menyiapkan query
-        $builder = $this->modelBuku->join('kategori', 'buku.id_kategori = kategori.id_kategori');
+        if (session()->get('role') !== 'admin') {
+            // If the user is not an admin, filter by user ID
+            $kategori->where('buku.id_user', session()->get('id_user'));
+            $kategori->where('buku.id_kategori', $idKategori);
+        }
+        // dd($kategori->findAll());
 
-        // Menerapkan filter pencarian
-        if (!empty($keyword)) {
-            $builder->groupStart()
-                ->like('judul', $keyword)
-                ->orLike('kategori.nama', $keyword)
+        // Apply search keyword filter
+        if (!empty($namaKategori)) {
+            $kategori->groupStart()
+                ->like('judul', $namaKategori)
+                ->orLike('kategori.nama', $namaKategori)
                 ->groupEnd();
         }
 
-        // Menerapkan filter kategori jika dipilih
-        if (!empty($kategori)) {
-            $builder->where('buku.id_kategori', $kategori);
-        }
+        // Get filtered book data
+        $buku = $kategori->findAll();
+        $kategori = $this->modelKategori->getKategori(session()->get("id_user"));
 
-        // Mendapatkan data buku beserta kategori
-        $buku = $builder->select('buku.*, kategori.nama as nama_kategori')->findAll();
+        $totalKategori = $this->modelKategori
+            ->where('id_user', session()->get("id_user"))
+            ->countAllResults();
 
-        // Memodifikasi nama kategori agar huruf kapital di awal kata
-        foreach ($buku as &$item) {
-            $item['nama_kategori'] = ucwords($item['nama_kategori']);
-        }
+        $totalBuku = $this->modelBuku
+            ->where('id_user', session()->get("id_user"))
+            ->countAllResults();
 
-        // Mengembalikan hasil sebagai JSON
-        return $this->response->setJSON($buku);
+        $data = [
+            'title' => "Daftar Buku",
+            'kategori' => $kategori,
+            'totalBuku' => $totalBuku,
+            'totalKategori' => $totalKategori,
+            'totalUser' => $this->modelUser->countAll(),
+            'buku' => $buku,
+            'currentPage' => 'buku'
+        ];
+
+        return view("buku/index", $data);
     }
 }

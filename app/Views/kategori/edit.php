@@ -28,7 +28,7 @@
         <!-- NAMA KATEGORI -->
         <div class="mb-3">
             <label for="nama-kategori" class="form-label">Kategori</label>
-            <input type="text" class="form-control <?= (isset($validation['nama-kategori'])) ? 'is-invalid' : '' ?>" id="nama-kategori" name="nama-kategori" placeholder="Tulis nama kategori buku Anda disini..." autofocus value="<?= old('nama-kategori', ucwords($kategori['nama'])); ?>">
+            <input type="text" class="form-control <?= (isset($validation['nama-kategori'])) ? 'is-invalid' : '' ?>" id="nama-kategori" name="nama-kategori" placeholder="Tulis nama kategori buku Anda disini..." autofocus value="<?= old('nama-kategori', $kategori['nama']); ?>">
 
             <!-- Pesan kesalahan untuk nama kategori buku -->
             <?php if (isset($validation['nama-kategori'])) : ?>

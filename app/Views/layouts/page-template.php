@@ -37,12 +37,14 @@
                     <li class="nav-item">
                         <a class="nav-link fs-5 <?= ($currentPage === 'kategori') ? 'active' : '' ?>" href="<?= base_url("/kategori"); ?>">Kategori</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link fs-5 <?= ($currentPage === 'user') ? 'active' : '' ?>" href="<?= base_url("/user"); ?>">User</a>
-                    </li>
+                    <?php if (session()->get("role") == "admin") : ?>
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 <?= ($currentPage === 'user') ? 'active' : '' ?>" href="<?= base_url("/user"); ?>">User</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
                 <form class="d-flex" role="search">
-                    <button class="btn btn-danger fs-5" type="submit">Log Out</button>
+                    <a href="<?= base_url("/logout"); ?>" class="btn btn-danger fs-5" type="submit">Log Out</a>
                 </form>
             </div>
         </div>

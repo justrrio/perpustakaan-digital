@@ -24,6 +24,7 @@
     <!-- FORM TAMBAH -->
     <form action="<?= base_url('/buku/tambah-buku'); ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field(); ?>
+        <input type="hidden" name="id_user" value="<?= session()->get("id_user"); ?>">
 
         <!-- JUDUL BUKU -->
         <div class="mb-3">
@@ -47,7 +48,7 @@
                 <option selected>-- Pilih Kategori --</option>
                 <?php foreach ($kategori as $k) : ?>
                     <option value="<?= $k['id_kategori'] ?>" <?= old('id_kategori') == $k['id_kategori'] ? 'selected' : ''; ?>>
-                        <?= ucwords($k['nama']); ?>
+                        <?= $k['nama']; ?>
                     </option>
                 <?php endforeach; ?>
             </select>

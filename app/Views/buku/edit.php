@@ -23,7 +23,7 @@
     <!-- FORM EDIT -->
     <form action="<?= base_url('/buku/edit-buku/' . $buku['id_buku']); ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field(); ?>
-        <input type="hidden" name="slug" value="<?= $buku['slug']; ?>">
+        <input type="hidden" name="id-buku" value="<?= $buku['id_buku']; ?>">
 
         <!-- JUDUL BUKU -->
         <div class="mb-3">

@@ -3,10 +3,10 @@
 <?= $this->section('content'); ?>
 
 <div class="mb-2 judul-page-buku">
-    <p>List Kategori <span>Buku</span></p>
+    <p>List Data <span>User</span></p>
 </div>
 
-<div class="container-kategori">
+<div class="container-user">
     <?php if (session()->getFlashdata("message")) : ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fa fa-check fs-5" aria-hidden="true"></i> <?= session()->getFlashdata("message"); ?>
@@ -15,19 +15,10 @@
     <?php endif; ?>
 
     <div class="container-wrapper-buku">
-        <div class="d-flex align-items-center" style="width: 50%; margin-top: 30px;">
-            <!-- Tambah kategori -->
-            <div class="d-flex align-items-center">
-                <a href="<?= base_url("kategori/tambah") ?>" class="btn btn-primary fs-5">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                    Tambah Kategori
-                </a>
-            </div>
-        </div>
         <div style="width: 50%;">
             <!-- Input untuk pencarian -->
             <div class="input-group">
-                <input type="text" class="form-control fs-5" id="searchInput" placeholder="Cari kategori buku..." aria-label="Cari">
+                <input type="text" class="form-control fs-5" id="searchInput" placeholder="Cari nama user..." aria-label="Cari">
                 <button class="btn btn-outline-secondary fs-5" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
             </div>
         </div>
@@ -38,32 +29,25 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nama</th>
-                <th>Jumlah Buku</th>
+                <th>Username</th>
+                <th>Email</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody id="kategoriTable">
-            <?php $no = 1;
-            $index = 0; ?>
-            <?php foreach ($jumlahBukuKategori as $jbk) : ?>
+            <?php $no = 1; ?>
+            <?php foreach ($user as $u) : ?>
                 <tr>
                     <td><?= $no; ?></td>
-                    <td><?= $jbk['kategori']; ?></td>
-                    <td><?= (isset($jbk['jumlah_buku'])) ? $jbk['jumlah_buku'] : 0 ?></td>
+                    <td><?= ucwords($u['username']); ?></td>
+                    <td><?= ucwords($u['email']); ?></td>
                     <td>
-                        <!-- Button Edit -->
-                        <a href="<?= base_url("kategori/edit/" . $jbk['kategori']) ?>" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Kategori">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </a>
-
                         <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-danger d-inline" data-bs-toggle="modal" data-bs-target="#exampleModal" data-nama-kategori="<?= ucwords($jbk['kategori']); ?>" data-id="<?= $jbk['id_kategori']; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Kategori">
+                        <button type="button" class="btn btn-danger d-inline" data-bs-toggle="modal" data-bs-target="#exampleModal" data-nama-user="<?= ucwords($u['username']); ?>" data-id="<?= $u['id_user']; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus User">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>
                     </td>
-                    <?php $no++;
-                    $index++ ?>
+                    <?php $no++; ?>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -106,16 +90,16 @@
             var button = event.relatedTarget;
 
             // Retrieve data
-            var namaKategori = button.getAttribute('data-nama-kategori');
+            var namaUser = button.getAttribute('data-nama-user');
             var id = button.getAttribute('data-id');
 
             // Update modal text
             var modalJudul = exampleModal.querySelector('.modal-judul-buku');
-            modalJudul.textContent = namaKategori;
+            modalJudul.textContent = namaUser;
 
             // Update form action
             var deleteForm = document.getElementById('deleteForm');
-            deleteForm.setAttribute('action', '<?= base_url("kategori/"); ?>' + id);
+            deleteForm.setAttribute('action', '<?= base_url("user/"); ?>' + id);
         });
 
         // Live search function

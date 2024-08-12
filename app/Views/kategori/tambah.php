@@ -24,6 +24,7 @@
     <!-- FORM TAMBAH -->
     <form action="<?= base_url('/kategori/tambah-kategori'); ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field(); ?>
+        <input type="hidden" name="id-user" value="<?= session()->get("id_user"); ?>">
 
         <!-- NAMA KATEGORI -->
         <div class="mb-3">

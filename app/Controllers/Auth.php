@@ -60,7 +60,7 @@ class Auth extends Controller
                 if (password_verify($password, $user['password'])) {
                     // Set session
                     $sessionData = [
-                        'user_id' => $user['id_user'],
+                        'id_user' => $user['id_user'],
                         'username' => $user['username'],
                         'email' => $user['email'],
                         'role' => $user['role'],

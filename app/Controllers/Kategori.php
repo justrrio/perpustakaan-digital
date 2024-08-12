@@ -2,24 +2,39 @@
 
 namespace App\Controllers;
 
-use App\Models\ModelBuku;
 use App\Models\ModelKategori;
-use App\Models\ModelUser;
+use App\Models\ModelBuku;
 
 class Kategori extends BaseController
 {
     public function __construct()
     {
         $this->modelKategori = new ModelKategori();
+        $this->modelBuku = new ModelBuku();
+
+        $this->idUser = session()->get("id_user");
+        $this->role = session()->get("role");
     }
 
     public function index()
     {
-        $kategori = $this->modelKategori->getKategori();
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+
+        // Kategori untuk Admin
+        if ($this->role == "admin") {
+            $kategori = $this->modelKategori->getKategori();
+        } else {
+            $kategori = $this->modelKategori->getKategori(session()->get("id_user"));
+        }
+        $jumlahBukuKategori = $this->modelBuku->getJumlahBukuKategori();
+
         $data = [
             'title' => "Daftar Kategori",
             'totalKategori' => $this->modelKategori->countAll(),
             'kategori' => $kategori,
+            'jumlahBukuKategori' => $jumlahBukuKategori,
             'currentPage' => 'kategori'
         ];
         return view('kategori/index', $data);
@@ -27,6 +42,10 @@ class Kategori extends BaseController
 
     public function tambah()
     {
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+
         $data = [
             'title' => "Tambah Kategori",
             'validation' => session()->getFlashdata('validation'),
@@ -38,10 +57,14 @@ class Kategori extends BaseController
 
     public function tambahKategori()
     {
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+
         // Aturan Validasi
         $validationRules = [
             'nama-kategori' => [
-                'rules' => 'required|is_unique[kategori.nama]',
+                'rules' => 'required',
                 'errors' => [
                     'required' => 'Nama kategori harus diisi.',
                     'is_unique' => 'Nama kategori sudah ada.'
@@ -57,7 +80,8 @@ class Kategori extends BaseController
         }
 
         $this->modelKategori->save([
-            "nama" => $this->request->getVar("nama-kategori"),
+            "id_user" => intval($this->request->getVar("id-user")),
+            "nama" => $this->request->getVar("nama-kategori")
         ]);
 
         session()->setFlashdata("message", "Data kategori baru <strong>berhasil</strong> ditambahkan!");
@@ -67,7 +91,10 @@ class Kategori extends BaseController
 
     public function edit($namaKategori)
     {
-        $kategori = $this->modelKategori->getKategori($namaKategori);
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+        $kategori = $this->modelKategori->getKategoriByNama($namaKategori);
 
         $data = [
             'title' => "Form Ubah Kategori",
@@ -81,7 +108,10 @@ class Kategori extends BaseController
 
     public function editKategori($namaKategori)
     {
-        $kategoriLama = $this->modelKategori->getKategori($namaKategori);
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
+        $kategoriLama = $this->modelKategori->getKategoriByNama($namaKategori);
 
         if (!$kategoriLama) {
             session()->setFlashdata('message', 'Nama kategori tidak ditemukan!');
@@ -118,6 +148,9 @@ class Kategori extends BaseController
 
     public function delete($id_kategori)
     {
+        if (!isset($this->idUser)) {
+            return redirect()->to(base_url('/login'));
+        }
         $kategori = $this->modelKategori->find($id_kategori);
 
         if ($kategori) {
